@@ -12,10 +12,11 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   try {
     const buffer = fs.readFileSync(req.file.path);
     const text = await parseFile(buffer, req.file.mimetype, req.file.originalname);
-    fs.unlinkSync(req.file.path);
     res.json({ text, filename: req.file.originalname });
   } catch (err) {
     res.status(422).json({ error: err.message });
+  } finally {
+    try { fs.unlinkSync(req.file.path); } catch {}
   }
 });
 
