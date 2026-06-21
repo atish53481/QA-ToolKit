@@ -18,7 +18,7 @@ router.post('/fetch', async (req, res) => {
 router.post('/publish', async (req, res) => {
   const { jiraId, artifacts } = req.body;
   const { JIRA_URL, JIRA_EMAIL, JIRA_TOKEN } = process.env;
-  if (!JIRA_URL || !JIRA_TOKEN) return res.status(400).json({ error: 'Jira not configured' });
+  if (!JIRA_URL || !JIRA_EMAIL || !JIRA_TOKEN) return res.status(400).json({ error: 'Jira not configured' });
   const token = Buffer.from(`${JIRA_EMAIL}:${JIRA_TOKEN}`).toString('base64');
   const base = JIRA_URL.replace(/\/+$/, '');
   const headers = { Authorization: `Basic ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' };
