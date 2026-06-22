@@ -27,33 +27,36 @@ router.post('/generate', async (req, res) => {
   const results = {}, errors = {};
   const run = async (key, fn) => { if (!sel[key]) return; try { results[key] = await fn(); } catch (err) { errors[key] = err.message; } };
 
+  // Strip screenshot from text-tool context — base64 blows token limits on text models
+  const { screenshotB64, ...textContext } = context;
+
   await Promise.all([
     run('testStrategy', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testStrategy, 'testStrategy');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestStrategy(context, sys);
+      const json = await generateTestStrategy(textContext, sys);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderStrategy(json), 'markdown', outputFormat, json.title);
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
     run('testPlan', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testPlan, 'testPlan');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestPlan(context, sys);
+      const json = await generateTestPlan(textContext, sys);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderPlan(json), 'markdown', outputFormat, json.title);
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
     run('testCases', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testCases, 'testCases');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestCases(context, sys);
+      const json = await generateTestCases(textContext, sys);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(toCSV(json), 'csv', outputFormat, 'Test Cases');
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
     run('bugReport', async () => {
-      if (!context.screenshotB64) throw new Error('No screenshot provided for Bug Report');
+      if (!screenshotB64) throw new Error('No screenshot provided for Bug Report');
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.bugReport, 'bugReport');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateBugReport(context.screenshotB64, context, sys);
+      const json = await generateBugReport(screenshotB64, textContext, sys);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderBugs(json), 'markdown', outputFormat, 'Bug Report');
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     })
