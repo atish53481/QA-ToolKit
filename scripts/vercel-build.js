@@ -10,7 +10,7 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const outDir = path.join(root, '.vercel', 'output');
 const staticDir = path.join(outDir, 'static');
-const funcDir = path.join(outDir, 'functions', 'api', 'index.func');
+const funcDir = path.join(outDir, 'functions', 'index.func');
 
 // 1. Build React client
 log('Building React client...');
@@ -49,12 +49,13 @@ write(j(funcDir, '.vc-config.json'), JSON.stringify({
 }, null, 2));
 
 // 4. Routing config
+// handle:filesystem serves static assets (CDN); remaining requests go to Express function.
+// Express receives original URL, so /api/config/status matches app.use('/api/config').
 write(j(outDir, 'config.json'), JSON.stringify({
   version: 3,
   routes: [
-    { src: '^/api(/.*)?$', dest: '/api/index' },
     { handle: 'filesystem' },
-    { src: '/(.*)', dest: '/index.html' }
+    { src: '/(.*)', dest: '/index' }
   ]
 }, null, 2));
 
