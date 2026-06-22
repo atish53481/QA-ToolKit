@@ -28,7 +28,11 @@ function updateEnv(updates) {
   });
   Object.assign(map, updates);
   Object.assign(process.env, updates);
-  fs.writeFileSync(ENV_PATH, Object.entries(map).map(([k, v]) => `${k}=${v}`).join('\n') + '\n');
+  try {
+    fs.writeFileSync(ENV_PATH, Object.entries(map).map(([k, v]) => `${k}=${v}`).join('\n') + '\n');
+  } catch {
+    // Serverless environments have read-only FS; process.env update above still applies
+  }
 }
 
 router.get('/status', (_, res) => {

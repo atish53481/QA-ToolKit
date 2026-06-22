@@ -5,7 +5,8 @@
         "start": "node server.js",
         "test": "jest --runInBand --forceExit",
         "test:watch": "jest --watch",
-        "dev": "concurrently \"node server.js\" \"npm run dev --prefix client\""
+        "dev": "concurrently \"node server.js\" \"npm run dev --prefix client\"",
+        "vercel-build": "cd client && npm install && npm run build"
     },
     "jest": {
         "testEnvironment": "node",

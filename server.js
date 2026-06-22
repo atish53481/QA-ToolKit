@@ -8,7 +8,7 @@ const tmpDir = path.join(__dirname, '.tmp');
 fs.mkdirSync(tmpDir, { recursive: true });
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json({ limit: '20mb' }));
 
 app.use('/api/config', require('./routes/config'));
@@ -20,6 +20,13 @@ app.use('/api/llm', require('./routes/generate'));
 app.use('/api', require('./routes/export'));
 
 app.get('/health', (_, res) => res.json({ ok: true }));
+
+// Serve React build in production (Vercel + `npm start`)
+const clientDist = path.join(__dirname, 'client/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (_, res) => res.sendFile(path.join(clientDist, 'index.html')));
+}
 
 const PORT = process.env.PORT || 3001;
 if (require.main === module) {

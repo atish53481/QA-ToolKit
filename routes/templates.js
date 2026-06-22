@@ -4,9 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const DATA_FILE = path.join(__dirname, '../data/templates.json');
+const BUNDLE_FILE = path.join(__dirname, '../data/templates.json');
+// Vercel bundle is read-only — write to /tmp; seed from bundle on cold start
+const DATA_FILE = process.env.VERCEL ? '/tmp/qa-templates.json' : BUNDLE_FILE;
 
 function load() {
+  if (process.env.VERCEL && !fs.existsSync(DATA_FILE)) {
+    try { fs.copyFileSync(BUNDLE_FILE, DATA_FILE); } catch {}
+  }
   try {
     const raw = fs.readFileSync(DATA_FILE, 'utf8').replace(/^﻿/, '');
     return JSON.parse(raw);
