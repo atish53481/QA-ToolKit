@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -13,6 +13,8 @@ app.use(express.json({ limit: '20mb' }));
 
 app.use('/api/config', require('./routes/config'));
 app.use('/api/jira', require('./routes/jira'));
+app.use('/api/templates', require('./routes/templates'));
+app.use('/api/samples', require('./routes/samples'));
 app.use('/api', require('./routes/upload'));
 app.use('/api/llm', require('./routes/generate'));
 app.use('/api', require('./routes/export'));

@@ -1,4 +1,4 @@
-const { chat } = require('./llmClient');
+﻿const { chat } = require('./llmClient');
 
 const SYSTEM = `You are an expert QA Functional Tester with 15+ years experience (RICE-POT framework).
 STRICT RULES (Anti-Hallucination):
@@ -10,9 +10,9 @@ STRICT RULES (Anti-Hallucination):
 
 const SCHEMA = { testCases: [{ scenario: 'string', tid: 'TC-NNN', testData: 'string', testCaseDescription: 'string', preCondition: 'string', testSteps: 'string', expectedResult: 'string', priority: 'High|Medium|Low', isAutomated: 'Yes|No', misc: 'string' }] };
 
-async function generateTestCases(context) {
+async function generateTestCases(context, systemPrompt = SYSTEM) {
   const raw = await chat([
-    { role: 'system', content: SYSTEM },
+    { role: 'system', content: systemPrompt },
     { role: 'user', content: `Generate test cases for:\n${JSON.stringify(context, null, 2)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}` }
   ]);
   return (Array.isArray(raw.testCases) ? raw.testCases : []).map((tc, i) => ({

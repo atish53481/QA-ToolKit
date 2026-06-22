@@ -1,13 +1,13 @@
-const { chat } = require('./llmClient');
+﻿const { chat } = require('./llmClient');
 
 const SYSTEM = `You are a QA Lead writing a formal 13-section test plan.
 STRICT RULES: Derive everything from provided requirement. Unknown specifics → "TBD". Output ONLY valid JSON.`;
 
 const SCHEMA = { objective: 'string', scope: { inScope: ['string'], outOfScope: ['string'] }, inclusions: ['string'], testEnvironments: ['string'], defectReporting: 'string', testStrategy: ['string'], schedule: [{ phase: 'string', owner: 'string', dates: 'string' }], deliverables: ['string'], entryCriteria: ['string'], exitCriteria: ['string'], tools: ['string'], risksAndMitigations: [{ risk: 'string', mitigation: 'string' }], approvals: [{ role: 'string', name: 'string' }] };
 
-async function generateTestPlan(context) {
+async function generateTestPlan(context, systemPrompt = SYSTEM) {
   const raw = await chat([
-    { role: 'system', content: SYSTEM },
+    { role: 'system', content: systemPrompt },
     { role: 'user', content: `Generate a 13-section test plan for:\n${JSON.stringify(context, null, 2)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}` }
   ]);
   const arr = k => Array.isArray(raw[k]) ? raw[k] : [];

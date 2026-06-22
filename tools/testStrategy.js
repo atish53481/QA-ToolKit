@@ -1,4 +1,4 @@
-const { chat } = require('./llmClient');
+﻿const { chat } = require('./llmClient');
 
 const SYSTEM = `You are a QA Lead with 15+ years experience writing test strategies.
 STRICT RULES (Anti-Hallucination):
@@ -9,9 +9,9 @@ STRICT RULES (Anti-Hallucination):
 
 const SCHEMA = { title: 'string', overview: 'string', testObjectives: ['string'], testScope: { inScope: ['string'], outOfScope: ['string'] }, testTypes: ['string'], testLevels: ['string'], testTools: ['string'], testEnvironment: 'string', defectManagement: 'string', riskAnalysis: [{ risk: 'string', impact: 'string', mitigation: 'string' }], metricsAndReporting: ['string'] };
 
-async function generateTestStrategy(context) {
+async function generateTestStrategy(context, systemPrompt = SYSTEM) {
   const raw = await chat([
-    { role: 'system', content: SYSTEM },
+    { role: 'system', content: systemPrompt },
     { role: 'user', content: `Generate a test strategy for:\n${JSON.stringify(context, null, 2)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}` }
   ]);
   const arr = k => Array.isArray(raw[k]) ? raw[k] : [];

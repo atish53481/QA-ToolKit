@@ -3,3 +3,13 @@ node_modules/
 .tmp/
 client/node_modules/
 client/dist/
+
+# Local/system files — not part of the app
+.superpowers/
+*.stackdump
+Pagelayout.docx
+Template/
+Error.png
+UsersatishDocumentsAppTest*/
+Product Requirment/
+docs/
