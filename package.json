@@ -6,7 +6,7 @@
         "test": "jest --runInBand --forceExit",
         "test:watch": "jest --watch",
         "dev": "concurrently \"node server.js\" \"npm run dev --prefix client\"",
-        "vercel-build": "cd client && npm install && npm run build"
+        "vercel-build": "cd client && npm install && npm run build && cd .. && mkdir -p public && cp -r client/dist/. public/"
     },
     "jest": {
         "testEnvironment": "node",
