@@ -5,6 +5,7 @@ node_modules/
 client/node_modules/
 client/dist/
 public/
+.vercel/output/
 
 # Local/system files — not part of the app
 .superpowers/
