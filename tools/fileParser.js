@@ -1,10 +1,11 @@
-const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 const XLSX = require('xlsx');
 
 async function parseFile(buffer, mimetype, filename) {
   const ext = (filename || '').split('.').pop().toLowerCase();
   if (ext === 'pdf' || mimetype === 'application/pdf') {
+    // pdf-parse v1.x reads a test PDF from disk at require() time — crashes serverless.
+    const pdfParse = require('pdf-parse');
     const data = await pdfParse(buffer);
     return data.text;
   }

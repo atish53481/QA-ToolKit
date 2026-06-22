@@ -56,7 +56,7 @@ export default function ConfigTab({ configStatus, onStatusChange }) {
           <a href="/api/samples/prd" download style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 18px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff', borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 700, boxShadow: '0 3px 10px rgba(99,102,241,.4)' }}>
             ⬇️ Download Sample PRD
           </a>
-          <div style={{ fontSize: 11, color: '#818cf8', marginTop: 8 }}>Markdown file · ShopEase Authentication · Sprint 14</div>
+          <div style={{ fontSize: 11, color: '#818cf8', marginTop: 8 }}>Markdown file</div>
         </div>
       </div>
     </div>

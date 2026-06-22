@@ -4,8 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
-const tmpDir = path.join(__dirname, '.tmp');
-fs.mkdirSync(tmpDir, { recursive: true });
+try { fs.mkdirSync(path.join(__dirname, '.tmp'), { recursive: true }); } catch {}
 
 const app = express();
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
