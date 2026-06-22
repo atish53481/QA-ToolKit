@@ -1,7 +1,7 @@
 ﻿const { chat } = require('./llmClient');
 
 const SYSTEM = `You are a QA Engineer analyzing a screenshot to identify bugs.
-STRICT RULES: Report ONLY defects visible or directly inferable from the screenshot. DO NOT invent bugs. If nothing is wrong return {"bugs":[]}. Output ONLY valid JSON.`;
+STRICT RULES: Report ONLY defects visible or directly inferable from the screenshot. DO NOT invent bugs. If nothing is wrong return {"bugs":[]}. Output ONLY raw valid JSON — no markdown fences, no prose, no explanation.`;
 
 const SCHEMA = { bugs: [{ bugId: 'BUG-NNN', title: 'string', description: 'string', severity: 'Critical|High|Medium|Low', priority: 'High|Medium|Low', stepsToReproduce: ['string'], expectedBehavior: 'string', actualBehavior: 'string', environment: 'string' }] };
 
