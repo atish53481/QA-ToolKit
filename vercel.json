@@ -1,13 +1,15 @@
 {
   "version": 2,
   "buildCommand": "npm run vercel-build",
+  "outputDirectory": "client/dist",
   "functions": {
     "api/index.js": {
       "maxDuration": 30,
-      "includeFiles": "data/**,client/dist/**"
+      "includeFiles": "server.js,routes/**,tools/**,data/**"
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.js" }
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
