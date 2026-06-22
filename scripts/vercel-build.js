@@ -12,6 +12,11 @@ const outDir = path.join(root, '.vercel', 'output');
 const staticDir = path.join(outDir, 'static');
 const funcDir = path.join(outDir, 'functions', 'index.func');
 
+// 0. Clean any stale cached output so old functions don't persist
+if (fs.existsSync(outDir)) {
+  fs.rmSync(outDir, { recursive: true, force: true });
+}
+
 // 1. Build React client
 log('Building React client...');
 runIn('client', 'npm install');
