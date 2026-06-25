@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import Markdown from 'react-markdown';
-import { apiFetch } from '../api';
+import { apiFetch, getLLMConfig } from '../api';
 
 const KEYS = ['testStrategy', 'testPlan', 'testCases', 'bugReport'];
 
@@ -34,7 +34,7 @@ export default function GenerateTab({ context, onArtifacts, onGoTemplates }) {
     try {
       const r = await apiFetch('/api/llm/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ context, artifacts: selected, templateIds })
+        body: JSON.stringify({ context, artifacts: selected, templateIds, llmConfig: getLLMConfig() })
       });
       setProgress('Processing results...');
       const data = await r.json();

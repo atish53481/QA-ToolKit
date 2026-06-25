@@ -22,8 +22,9 @@ function getTemplate(templateId, artifactType) {
 }
 
 router.post('/generate', async (req, res) => {
-  const { context, artifacts: sel, templateIds = {} } = req.body;
+  const { context, artifacts: sel, templateIds = {}, llmConfig } = req.body;
   if (!context) return res.status(400).json({ error: 'context required' });
+  const llmOpts = llmConfig ? { provider: llmConfig.provider, apiKey: llmConfig.apiKey, model: llmConfig.model } : {};
   const results = {}, errors = {};
   const run = async (key, fn) => { if (!sel[key]) return; try { results[key] = await fn(); } catch (err) { errors[key] = err.message; } };
 
@@ -34,21 +35,21 @@ router.post('/generate', async (req, res) => {
     run('testStrategy', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testStrategy, 'testStrategy');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestStrategy(textContext, sys);
+      const json = await generateTestStrategy(textContext, sys, llmOpts);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderStrategy(json), 'markdown', outputFormat, json.title);
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
     run('testPlan', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testPlan, 'testPlan');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestPlan(textContext, sys);
+      const json = await generateTestPlan(textContext, sys, llmOpts);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderPlan(json), 'markdown', outputFormat, json.title);
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
     run('testCases', async () => {
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.testCases, 'testCases');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateTestCases(textContext, sys);
+      const json = await generateTestCases(textContext, sys, llmOpts);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(toCSV(json), 'csv', outputFormat, 'Test Cases');
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     }),
@@ -56,7 +57,7 @@ router.post('/generate', async (req, res) => {
       if (!screenshotB64) throw new Error('No screenshot provided for Bug Report');
       const { systemPrompt: sys, outputFormat: rawFmt } = getTemplate(templateIds.bugReport, 'bugReport');
       const outputFormat = resolveFormat(rawFmt);
-      const json = await generateBugReport(screenshotB64, textContext, sys);
+      const json = await generateBugReport(screenshotB64, textContext, sys, llmOpts);
       const content = outputFormat === 'json' ? JSON.stringify(json, null, 2) : convert(renderBugs(json), 'markdown', outputFormat, 'Bug Report');
       return { json, content, format: outputFormat, rawFormat: rawFmt, ext: ext(rawFmt) };
     })

@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import { apiFetch } from '../api';
+import { apiFetch, setLLMConfig } from '../api';
 
 const PROVIDERS = { groq: { label: 'GROQ (Free)', defaultModel: 'openai/gpt-oss-120b' }, claude: { label: 'Claude (Anthropic)', defaultModel: 'claude-opus-4-7' }, openai: { label: 'OpenAI', defaultModel: 'gpt-4o' } };
 const S = { card: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 20, marginBottom: 16 }, label: { display: 'block', fontSize: 13, color: '#374151', marginBottom: 4, marginTop: 12 }, input: { width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 4, fontSize: 14, boxSizing: 'border-box' } };
@@ -20,7 +20,7 @@ export default function LLMCard({ configStatus, onStatusChange }) {
       const r = await apiFetch('/api/config/test-llm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider, apiKey, model }) });
       const data = await r.json(); setResult(data);
       if (data.ok) {
-        await apiFetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ llmProvider: provider, llmApiKey: apiKey, llmModel: model }) });
+        setLLMConfig({ provider, apiKey, model });
         onStatusChange(prev => ({ ...prev, llm: { configured: true, provider, model } }));
       }
     } finally { setSaving(false); }

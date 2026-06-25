@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { apiFetch, setPassword, getPassword } from './api';
+import { apiFetch, setPassword, getPassword, getLLMConfig } from './api';
 import ConfigTab from './tabs/ConfigTab';
 import InputTab from './tabs/InputTab';
 import GenerateTab from './tabs/GenerateTab';
@@ -34,7 +34,11 @@ export default function App() {
   useEffect(() => {
     apiFetch('/api/config/status')
       .then(r => { if (r.status === 401) { setNeedsAuth(true); return null; } return r.json(); })
-      .then(d => d && setConfigStatus(d))
+      .then(d => {
+        if (!d) return;
+        const llmCfg = getLLMConfig();
+        setConfigStatus({ ...d, llm: { configured: !!llmCfg, provider: llmCfg?.provider, model: llmCfg?.model } });
+      })
       .catch(() => {});
   }, []);
 

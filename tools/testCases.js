@@ -10,11 +10,11 @@ STRICT RULES (Anti-Hallucination):
 
 const SCHEMA = { testCases: [{ scenario: 'string', tid: 'TC-NNN', testData: 'string', testCaseDescription: 'string', preCondition: 'string', testSteps: 'string', expectedResult: 'string', priority: 'High|Medium|Low', isAutomated: 'Yes|No', misc: 'string' }] };
 
-async function generateTestCases(context, systemPrompt = SYSTEM) {
+async function generateTestCases(context, systemPrompt = SYSTEM, opts = {}) {
   const raw = await chat([
     { role: 'system', content: systemPrompt },
     { role: 'user', content: `Generate test cases for:\n${JSON.stringify(context, null, 2)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}` }
-  ]);
+  ], opts);
   return (Array.isArray(raw.testCases) ? raw.testCases : []).map((tc, i) => ({
     scenario: tc.scenario || 'TBD',
     tid: tc.tid || `TC-${String(i + 1).padStart(3, '0')}`,

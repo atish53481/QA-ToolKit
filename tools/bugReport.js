@@ -5,14 +5,14 @@ STRICT RULES: Report ONLY defects visible or directly inferable from the screens
 
 const SCHEMA = { bugs: [{ bugId: 'BUG-NNN', title: 'string', description: 'string', severity: 'Critical|High|Medium|Low', priority: 'High|Medium|Low', stepsToReproduce: ['string'], expectedBehavior: 'string', actualBehavior: 'string', environment: 'string' }] };
 
-async function generateBugReport(screenshotB64, context, systemPrompt = SYSTEM) {
-  const provider = process.env.LLM_PROVIDER || 'groq';
+async function generateBugReport(screenshotB64, context, systemPrompt = SYSTEM, opts = {}) {
+  const provider = opts.provider || process.env.LLM_PROVIDER || 'groq';
   const prompt = `Analyze this screenshot for bugs. Context: ${JSON.stringify(context)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}`;
   const userContent = provider === 'claude'
     ? [{ type: 'image', source: { type: 'base64', media_type: 'image/png', data: screenshotB64.replace(/^data:image\/\w+;base64,/, '') } }, { type: 'text', text: prompt }]
     : [{ type: 'image_url', image_url: { url: screenshotB64 } }, { type: 'text', text: prompt }];
 
-  const raw = await chat([{ role: 'system', content: systemPrompt }, { role: 'user', content: userContent }]);
+  const raw = await chat([{ role: 'system', content: systemPrompt }, { role: 'user', content: userContent }], opts);
   return (Array.isArray(raw.bugs) ? raw.bugs : []).map((bug, i) => ({
     bugId: bug.bugId || `BUG-${String(i + 1).padStart(3, '0')}`,
     title: bug.title || 'TBD', description: bug.description || 'TBD',

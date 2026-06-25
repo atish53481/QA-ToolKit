@@ -9,11 +9,11 @@ STRICT RULES (Anti-Hallucination):
 
 const SCHEMA = { title: 'string', overview: 'string', testObjectives: ['string'], testScope: { inScope: ['string'], outOfScope: ['string'] }, testTypes: ['string'], testLevels: ['string'], testTools: ['string'], testEnvironment: 'string', defectManagement: 'string', riskAnalysis: [{ risk: 'string', impact: 'string', mitigation: 'string' }], metricsAndReporting: ['string'] };
 
-async function generateTestStrategy(context, systemPrompt = SYSTEM) {
+async function generateTestStrategy(context, systemPrompt = SYSTEM, opts = {}) {
   const raw = await chat([
     { role: 'system', content: systemPrompt },
     { role: 'user', content: `Generate a test strategy for:\n${JSON.stringify(context, null, 2)}\n\nReturn JSON matching:\n${JSON.stringify(SCHEMA, null, 2)}` }
-  ]);
+  ], opts);
   const arr = k => Array.isArray(raw[k]) ? raw[k] : [];
   return {
     title: raw.title || 'TBD', overview: raw.overview || 'TBD',
