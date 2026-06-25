@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
+import { apiFetch } from '../api';
 
 const ARTIFACT_META = {
   testStrategy: {
@@ -53,7 +54,7 @@ export default function TemplatesTab() {
   useEffect(() => { loadTemplates(); }, []);
 
   async function loadTemplates() {
-    try { setTemplates(await (await fetch('/api/templates')).json()); }
+    try { setTemplates(await (await apiFetch('/api/templates')).json()); }
     catch { setError('Failed to load templates'); }
   }
 
@@ -82,9 +83,9 @@ export default function TemplatesTab() {
     setSaving(true); setError('');
     try {
       if (editing === 'new') {
-        await fetch('/api/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, artifactType: activeType, systemPrompt: form.systemPrompt, outputFormat: form.outputFormat }) });
+        await apiFetch('/api/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, artifactType: activeType, systemPrompt: form.systemPrompt, outputFormat: form.outputFormat }) });
       } else {
-        await fetch(`/api/templates/${editing}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, systemPrompt: form.systemPrompt, outputFormat: form.outputFormat }) });
+        await apiFetch(`/api/templates/${editing}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.name, systemPrompt: form.systemPrompt, outputFormat: form.outputFormat }) });
       }
       await loadTemplates(); cancelEdit();
     } catch { setError('Failed to save template'); }
@@ -93,14 +94,14 @@ export default function TemplatesTab() {
 
   async function deleteTemplate(id) {
     if (!confirm('Delete this template?')) return;
-    try { await fetch(`/api/templates/${id}`, { method: 'DELETE' }); await loadTemplates(); if (expanded === id) setExpanded(null); }
+    try { await apiFetch(`/api/templates/${id}`, { method: 'DELETE' }); await loadTemplates(); if (expanded === id) setExpanded(null); }
     catch { setError('Failed to delete template'); }
   }
 
   async function updateFormat(id, fmt) {
     setFmtOverride(p => ({ ...p, [id]: fmt })); // optimistic — show instantly
     try {
-      await fetch(`/api/templates/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ outputFormat: fmt }) });
+      await apiFetch(`/api/templates/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ outputFormat: fmt }) });
       await loadTemplates();
     } catch {
       setError('Failed to update output format');

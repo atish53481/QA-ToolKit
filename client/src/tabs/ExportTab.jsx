@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react';
+import { apiFetch } from '../api';
 
 export default function ExportTab({ artifacts, configStatus, context }) {
   const [downloading, setDownloading] = useState(false);
@@ -11,7 +12,7 @@ export default function ExportTab({ artifacts, configStatus, context }) {
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      const r = await fetch('/api/export/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ artifacts }) });
+      const r = await apiFetch('/api/export/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ artifacts }) });
       if (!r.ok) throw new Error('Download failed');
       const blob = await r.blob();
       const url = URL.createObjectURL(blob);
@@ -25,7 +26,7 @@ export default function ExportTab({ artifacts, configStatus, context }) {
     if (!jiraId) return alert('Enter a Jira Issue ID');
     setPublishing(true); setPublishResult(null);
     try {
-      const r = await fetch('/api/jira/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jiraId, artifacts }) });
+      const r = await apiFetch('/api/jira/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jiraId, artifacts }) });
       setPublishResult(await r.json());
     } catch (err) { setPublishResult({ ok: false, error: err.message }); }
     finally { setPublishing(false); }

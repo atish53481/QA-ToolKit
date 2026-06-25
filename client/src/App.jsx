@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
+import { apiFetch, setPassword, getPassword } from './api';
 import ConfigTab from './tabs/ConfigTab';
 import InputTab from './tabs/InputTab';
 import GenerateTab from './tabs/GenerateTab';
@@ -26,8 +27,40 @@ export default function App() {
   const [configStatus, setConfigStatus] = useState({ llm: { configured: false }, jira: { configured: false } });
   const [context, setContext] = useState({ source: 'file', jiraIssue: null, fileText: '', screenshotB64: '', projectId: '' });
   const [artifacts, setArtifacts] = useState(null);
+  const [needsAuth, setNeedsAuth] = useState(false);
+  const [pwInput, setPwInput] = useState('');
+  const [pwError, setPwError] = useState('');
 
-  useEffect(() => { fetch('/api/config/status').then(r => r.json()).then(setConfigStatus).catch(() => {}); }, []);
+  useEffect(() => {
+    apiFetch('/api/config/status')
+      .then(r => { if (r.status === 401) { setNeedsAuth(true); return null; } return r.json(); })
+      .then(d => d && setConfigStatus(d))
+      .catch(() => {});
+  }, []);
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setPassword(pwInput);
+    const r = await apiFetch('/api/config/status');
+    if (r.status === 401) { setPwError('Wrong password'); setPassword(''); return; }
+    setConfigStatus(await r.json());
+    setNeedsAuth(false);
+    setPwError('');
+  };
+
+  if (needsAuth) return (
+    <div style={{ minHeight: '100vh', background: '#f0f2f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <form onSubmit={handleAuth} style={{ background: '#fff', borderRadius: 12, padding: 40, boxShadow: '0 4px 24px rgba(0,0,0,.10)', minWidth: 320, textAlign: 'center' }}>
+        <div style={{ fontSize: 36, marginBottom: 12 }}>🔒</div>
+        <div style={{ fontWeight: 800, fontSize: 20, color: '#1e1b4b', marginBottom: 4 }}>QA Generator</div>
+        <div style={{ color: '#6b7280', fontSize: 13, marginBottom: 24 }}>Enter the app password to continue</div>
+        <input type="password" value={pwInput} onChange={e => setPwInput(e.target.value)} placeholder="Password" autoFocus
+          style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 14, marginBottom: 12, outline: 'none', boxSizing: 'border-box' }} />
+        {pwError && <div style={{ color: '#dc2626', fontSize: 12, marginBottom: 10 }}>{pwError}</div>}
+        <button type="submit" style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer' }}>Unlock</button>
+      </form>
+    </div>
+  );
 
   const llmOk = configStatus.llm?.configured;
   const hasInput = !!(context.jiraIssue || context.fileText || context.screenshotB64);

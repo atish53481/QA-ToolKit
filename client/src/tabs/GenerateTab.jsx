@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import Markdown from 'react-markdown';
+import { apiFetch } from '../api';
 
 const KEYS = ['testStrategy', 'testPlan', 'testCases', 'bugReport'];
 
@@ -23,7 +24,7 @@ export default function GenerateTab({ context, onArtifacts, onGoTemplates }) {
   const [activePreview, setActivePreview] = useState('testStrategy');
 
   useEffect(() => {
-    fetch('/api/templates').then(r => r.json()).then(setTemplates).catch(() => {});
+    apiFetch('/api/templates').then(r => r.json()).then(setTemplates).catch(() => {});
   }, []);
 
   const toggle = (k) => { if (k === 'bugReport' && !hasScreenshot) return; setSelected(p => ({ ...p, [k]: !p[k] })); };
@@ -31,7 +32,7 @@ export default function GenerateTab({ context, onArtifacts, onGoTemplates }) {
   const handleGenerate = async () => {
     setGenerating(true); setResults(null); setErrors({}); setProgress('Sending to AI...');
     try {
-      const r = await fetch('/api/llm/generate', {
+      const r = await apiFetch('/api/llm/generate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ context, artifacts: selected, templateIds })
       });

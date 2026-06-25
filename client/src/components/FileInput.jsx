@@ -1,4 +1,5 @@
 ﻿import { useState, useRef } from 'react';
+import { apiFetch } from '../api';
 const col = (active) => ({ flex: 1, border: ('2px solid ' + (active ? '#8b5cf6' : '#e5e7eb')), borderRadius: 8, padding: 16, minWidth: 0 });
 const zone = (over) => ({ border: ('2px dashed ' + (over ? '#8b5cf6' : '#d1d5db')), borderRadius: 6, padding: '24px 12px', textAlign: 'center', cursor: 'pointer', background: over ? '#f5f3ff' : 'transparent', marginTop: 12 });
 
@@ -14,7 +15,7 @@ export default function FileInput({ onFileChange }) {
     setUploading(true); setError(''); setFile(f);
     const fd = new FormData(); fd.append('file', f);
     try {
-      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      const r = await apiFetch('/api/upload', { method: 'POST', body: fd });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
       setPreview(data.text.slice(0, 300)); onFileChange(data.text, data.filename);
