@@ -17,6 +17,9 @@ async function parseFile(buffer, mimetype, filename) {
     const wb = XLSX.read(buffer, { type: 'buffer' });
     return wb.SheetNames.map(n => XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n\n');
   }
+  if (ext === 'md' || mimetype === 'text/markdown' || mimetype === 'text/plain') {
+    return buffer.toString('utf8');
+  }
   throw new Error(`Unsupported file type: ${ext}`);
 }
 

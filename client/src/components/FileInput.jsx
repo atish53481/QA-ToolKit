@@ -25,7 +25,7 @@ export default function FileInput({ onFileChange }) {
   return (
     <div style={col(!!file)}>
       <strong style={{ fontSize: 14 }}>Import File</strong>
-      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>PDF - DOCX - XLSX</div>
+      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>PDF - DOCX - XLSX - MD</div>
       <div style={zone(dragging)}
         onDragOver={e => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
@@ -33,7 +33,7 @@ export default function FileInput({ onFileChange }) {
         onClick={() => ref.current.click()}>
         <div style={{ fontSize: 24 }}>File</div>
         <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>{uploading ? 'Uploading...' : 'Drop file or click to browse'}</div>
-        <input ref={ref} type="file" accept=".pdf,.docx,.xlsx" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) upload(e.target.files[0]); }} />
+        <input ref={ref} type="file" accept=".pdf,.docx,.xlsx,.md" style={{ display: 'none' }} onChange={e => { if (e.target.files[0]) upload(e.target.files[0]); }} />
       </div>
       {error && <div style={{ marginTop: 8, fontSize: 12, color: '#dc2626' }}>{error}</div>}
       {preview && <div style={{ marginTop: 10, padding: 8, background: '#faf5ff', borderRadius: 4, fontSize: 11, color: '#6b7280' }}><strong style={{ color: '#7c3aed' }}>{file?.name}</strong><div style={{ marginTop: 4 }}>{preview}...</div></div>}

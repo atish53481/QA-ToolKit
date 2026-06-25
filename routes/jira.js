@@ -23,10 +23,10 @@ router.post('/publish', async (req, res) => {
   const base = JIRA_URL.replace(/\/+$/, '');
   const headers = { Authorization: `Basic ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' };
   const body = [
-    artifacts.testStrategy?.markdown && `**Test Strategy**\n\n${artifacts.testStrategy.markdown}`,
-    artifacts.testPlan?.markdown && `**Test Plan**\n\n${artifacts.testPlan.markdown}`,
-    artifacts.testCases?.csv && `**Test Cases (CSV)**\n\n${artifacts.testCases.csv}`,
-    artifacts.bugReport?.markdown && `**Bug Report**\n\n${artifacts.bugReport.markdown}`
+    artifacts.testStrategy?.content && `**Test Strategy**\n\n${artifacts.testStrategy.content}`,
+    artifacts.testPlan?.content && `**Test Plan**\n\n${artifacts.testPlan.content}`,
+    artifacts.testCases?.content && `**Test Cases (CSV)**\n\n${artifacts.testCases.content}`,
+    artifacts.bugReport?.content && `**Bug Report**\n\n${artifacts.bugReport.content}`
   ].filter(Boolean).join('\n\n---\n\n');
   if (!body) return res.status(400).json({ error: 'No artifacts to publish' });
   try {
